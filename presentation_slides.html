@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Đề Tài Giữa Kỳ: Hệ Thống Đa Đại Lý LLM Trong Chẩn Đoán Y Khoa</title>
+
+  <!-- Google Fonts for Academic & Professional Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Reveal.js Core & Themes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/white.min.css">
+
+  <style>
+    /* =========================================================
+       ACADEMIC & FORMAL DESIGN SYSTEM (Clean Professional Light/Dark Hybrid)
+       ========================================================= */
+    :root {
+      --font-academic: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-code: 'Roboto Mono', monospace;
+      --color-primary: #0f172a;    /* Deep Navy */
+      --color-secondary: #2563eb;  /* Academic Blue */
+      --color-accent: #0d9488;     /* Teal Accent */
+      --color-border: #e2e8f0;     /* Neutral Light Border */
+      --color-bg-subtle: #f8fafc;  /* Soft Background */
+      --color-text-dark: #1e293b;
+      --color-text-muted: #64748b;
+    }
+
+    body {
+      background-color: #f8fafc !important;
+      font-family: var(--font-academic) !important;
+      color: var(--color-text-dark) !important;
+    }
+
+    .reveal {
+      font-family: var(--font-academic) !important;
+      font-size: 28px;
+      color: var(--color-text-dark);
+    }
+
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      font-family: var(--font-academic) !important;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: -0.01em;
+      text-transform: none;
+    }
+
+    .reveal h1 { font-size: 1.8em; line-height: 1.25; }
+    .reveal h2 { font-size: 1.4em; border-bottom: 2px solid var(--color-secondary); padding-bottom: 8px; margin-bottom: 20px; }
+    .reveal h3 { font-size: 1.1em; color: var(--color-secondary); margin-bottom: 12px; }
+
+    /* Academic Header Label */
+    .academic-label {
+      font-size: 0.55em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-secondary);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 4px 12px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    /* Structured Layout Blocks */
+    .block-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .block-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .academic-box {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .academic-box h4 {
+      font-size: 0.85em;
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--color-primary);
+    }
+
+    .academic-box ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.68em;
+      line-height: 1.6;
+      color: var(--color-text-dark);
+    }
+
+    .academic-box ul li {
+      margin-bottom: 6px;
+    }
+
+    /* Formal Table Design */
+    table.academic-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62em;
+      margin-top: 20px;
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+    }
+
+    table.academic-table th {
+      background: #f1f5f9;
+      color: var(--color-primary);
+      font-weight: 600;
+      padding: 10px 12px;
+      border-bottom: 2px solid #cbd5e1;
+      text-align: center;
+    }
+
+    table.academic-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--color-border);
+      text-align: center;
+      color: var(--color-text-dark);
+    }
+
+    table.academic-table tr.highlight-row {
+      background: #f0fdf4;
+      font-weight: 600;
+    }
+
+    /* Formal Process Pipeline */
+    .pipeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .pipeline-item {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-secondary);
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-size: 0.65em;
+      line-height: 1.5;
+    }
+
+    .pipeline-item strong {
+      color: var(--color-primary);
+    }
+
+    /* Typography Helpers */
+    .text-muted { color: var(--color-text-muted); }
+    .text-blue { color: var(--color-secondary); }
+    .text-teal { color: var(--color-accent); }
+
+    .reveal .slide-number {
+      font-family: var(--font-academic);
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- =========================================================
+           SLIDE 1: Title Slide (Academic & Formal - No Author)
+           ========================================================= -->
+      <section style="text-align: center;">
+        <div class="academic-label">Báo Cáo Đề Tài Giữa Kỳ • Môn Học: Machine Learning Security</div>
+        <h1 style="font-size: 1.7em; color: var(--color-primary); margin-bottom: 20px;">
+          Hệ Thống Đa Đại Lý LLM Tích Hợp Truy Xuất Tri Thức Y Khoa Cho Bài Toán MedQA-USMLE
+        </h1>
+        <p style="font-size: 0.75em; color: var(--color-text-muted); margin-bottom: 35px;">
+          Medical Multi-Agent LLM System for Factual Accuracy Enhancement
+        </p>
+
+        <div style="font-size: 0.65em; color: var(--color-text-dark); border-top: 1px solid var(--color-border); pt: 15px; display: inline-block; padding-top: 15px;">
+          <strong>Kiến trúc nghiên cứu:</strong> MedRAGAgents Framework (Tích hợp MedAgents & MedRAG)<br>
+          <strong>Mô hình ngôn ngữ thử nghiệm:</strong> Google Gemini API / Multi-Vendor LLM
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 2: Động Lực & Đặt Vấn Đề
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">1. Động Lực Nghiên Cứu</div>
+        <h2>Đặt Vấn Đề & Thách Thức Trong Y Khoa</h2>
+
+        <div class="block-grid-2">
+          <div class="academic-box">
+            <h4>Hạn Chế Của LLM Đơn Lẻ</h4>
+            <ul>
+              <li><strong>Rủi ro ảo giác (Hallucination):</strong> Mô hình sinh văn bản dễ đưa ra chuẩn đoán không căn cứ hoặc sai lệch về lâm sàng.</li>
+              <li><strong>Giới hạn miền suy luận:</strong> Câu hỏi trắc nghiệm y khoa (MedQA-USMLE) đòi hỏi sự kết hợp đồng thời giữa Dược lý, Giải phẫu, Bệnh lý học và Sinh lý bệnh.</li>
+              <li><strong>Thiếu khả năng kiểm chứng:</strong> LLM đơn lẻ không có cơ chế đối soát hoặc kiểm định chéo giữa các lập luận.</li>
+            </ul>
+          </div>
+
+          <div class="academic-box">
+            <h4>Mục Tiêu Đề Tài</h4>
+            <ul>
+              <li><strong>Thiết kế hệ thống Đa đại lý (Multi-Agent):</strong> Mô phỏng quy trình hội chẩn chuyên khoa trong y tế.</li>
+              <li><strong>Tích hợp RAG y khoa:</strong> Truy xuất minh chứng trực tiếp từ cơ sở dữ liệu y học uy tín.</li>
+              <li><strong>Đánh giá thực nghiệm:</strong> Kiểm chứng độ chính xác thực tế (Factual Accuracy) trên bộ dữ liệu chuẩn MedQA-USMLE.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 3: Kiến Trúc Hệ Thống
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">2. Kiến Trúc Hệ Thống</div>
+        <h2>Tổng Quan Kiến Trúc MedRAGAgents</h2>
+
+        <div class="block-grid-3">
+          <div class="academic-box">
+            <h4>1. Phân Hệ Đa Đại Lý</h4>
+            <ul>
+              <li><strong>Domain Classifier:</strong> Phân loại miền chuyên khoa của câu hỏi và đáp án.</li>
+              <li><strong>Domain Analysts:</strong> Phân tích lâm sàng theo từng chuyên khoa cụ thể.</li>
+              <li><strong>Synthesizer:</strong> Tổng hợp các báo cáo phân tích thành báo cáo chung.</li>
+              <li><strong>Consensus Verifier:</strong> Bỏ phiếu đồng thuận và chỉnh sửa báo cáo đa vòng.</li>
+            </ul>
+          </div>
+
+          <div class="academic-box">
+            <h4>2. Phân Hệ Truy Xuất (RAG)</h4>
+            <ul>
+              <li><strong>Tập tri thức (Corpora):</strong> PubMed, StatPearls, Textbooks, MedCorp.</li>
+              <li><strong>Thuật toán truy xuất:</strong> MedCPT Query Encoder, BM25, RRF Fusion.</li>
+              <li><strong>Tích hợp minh chứng:</strong> Bổ sung văn bản trích dẫn vào báo cáo tổng hợp.</li>
+            </ul>
+          </div>
+
+          <div class="academic-box">
+            <h4>3. Phân Hệ Bộ Nhớ (Memory)</h4>
+            <ul>
+              <li><strong>Short-Term Memory:</strong> Bộ nhớ tạm thời trong RAM truyền dữ liệu giữa các đại lý trong 1 lượt xử lý.</li>
+              <li><strong>Long-Term Memory:</strong> Bộ nhớ đệm SHA-256 JSON Disk Cache lưu trữ kết quả suy luận.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 4: Quy Trình Suy Luận Đa Đại Lý
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">3. Quy Trình Xử Lý</div>
+        <h2>Quy Trình Suy Luận Đa Đại Lý (Pipeline)</h2>
+
+        <div class="pipeline-list">
+          <div class="pipeline-item">
+            <strong>Bước 1. Phân loại chuyên khoa (Domain Classification):</strong> Nhận câu hỏi MedQA, xác định 5 miền chuyên khoa cho nội dung câu hỏi và 2 miền chuyên khoa cho các phương án lựa chọn.
+          </div>
+          <div class="pipeline-item">
+            <strong>Bước 2. Phân tích chuyên sâu & Truy xuất minh chứng (Domain Analysis & RAG):</strong> Các đại lý chuyên khoa phân tích độc lập; đồng thời đại lý RAG truy xuất tài liệu từ MedRAG.
+          </div>
+          <div class="pipeline-item">
+            <strong>Bước 3. Tổng hợp báo cáo y khoa (Multi-Domain Synthesis):</strong> Đại lý Synthesizer kết hợp kết quả phân tích chuyên khoa và tri thức truy xuất thành báo cáo tổng hợp (Key Knowledge & Total Analysis).
+          </div>
+          <div class="pipeline-item">
+            <strong>Bước 4. Hội chẩn & Bỏ phiếu đồng thuận (Consensus Verification Loop):</strong> Các đại lý tiến hành bỏ phiếu (YES/NO). Nếu chưa đạt đồng thuận, tiến hành đưa ra khuyến nghị và chỉnh sửa báo cáo tối đa 3 vòng ($N \le 3$).
+          </div>
+          <div class="pipeline-item">
+            <strong>Bước 5. Trích xuất đáp án (Final Answer Derivation):</strong> Đưa ra lựa chọn đáp án cuối cùng (A/B/C/D/E) cùng chuỗi lập luận logic.
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 5: Các Biến Thể Đánh Giá (System Variants)
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">4. Thực Nghiệm Biến Thể</div>
+        <h2>Các Biến Thể Hệ Thống Thử Nghiệm (V0 – V3)</h2>
+
+        <table class="academic-table">
+          <thead>
+            <tr>
+              <th>Biến Thể</th>
+              <th>Mô Tả Quy Trình Vận Hành</th>
+              <th>RAG</th>
+              <th>Đa Đại Lý</th>
+              <th>Bộ Nhớ (Memory)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>V0 Direct LLM</strong></td>
+              <td>Mô hình cơ sở Chain-of-Thought (Google Gemini Prompt đơn)</td>
+              <td>Không</td>
+              <td>Không</td>
+              <td>Không</td>
+            </tr>
+            <tr>
+              <td><strong>V1 RAG-Only</strong></td>
+              <td>Truy xuất tài liệu MedRAG + Đưa ra quyết định trực tiếp</td>
+              <td>Có</td>
+              <td>Không</td>
+              <td>Không</td>
+            </tr>
+            <tr>
+              <td><strong>V2 Multi-Agent</strong></td>
+              <td>Quy trình Đa đại lý (Domain → Analysis → Synthesis → Verifier)</td>
+              <td>Không</td>
+              <td>Có</td>
+              <td>Không</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>V3 Full System</strong></td>
+              <td>Hệ thống hoàn chỉnh MedRAGAgents (Multi-Agent + RAG + Dual Memory)</td>
+              <td>Có</td>
+              <td>Có</td>
+              <td>Có</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 6: Phương Pháp Đánh Giá & Chỉ Số
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">5. Phương Pháp Đánh Giá</div>
+        <h2>Chỉ Số Đánh Giá & Phân Tích Thống Kê</h2>
+
+        <div class="block-grid-2">
+          <div class="academic-box">
+            <h4>Chỉ Số Đánh Giá Chính (Primary Metrics)</h4>
+            <ul>
+              <li><strong>Độ chính xác (Accuracy):</strong> Tỷ lệ phương án dự đoán đúng trên tổng số câu hỏi ($N_{correct} / N_{total}$).</li>
+              <li><strong>Tỷ lệ phản hồi không hợp lệ (Invalid Rate):</strong> Tỷ lệ câu trả lời lỗi hoặc không tuân thủ định dạng.</li>
+              <li><strong>Mức tăng trưởng độ chính xác (Accuracy Gain):</strong> $\Delta = \text{Accuracy}(V3) - \text{Accuracy}(V0)$.</li>
+            </ul>
+          </div>
+
+          <div class="academic-box">
+            <h4>Phương Pháp Phân Tích Thống Kê</h4>
+            <ul>
+              <li><strong>Bootstrap 95% Confidence Interval:</strong> Đánh giá khoảng tin cậy thống kê cho độ chính xác qua 1,000 lần lấy mẫu lại.</li>
+              <li><strong>Kiểm định McNemar ($\chi^2$):</strong> Đánh giá ý nghĩa thống kê về sự khác biệt hiệu năng giữa mô hình V3 và V0.</li>
+              <li><strong>Win / Loss / Tie Matrix:</strong> Thống kê chi tiết các trường hợp V3 sửa đúng câu hỏi V0 làm sai.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 7: Bảng Kết Quả Thử Nghiệm
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">6. Kết Quả Thực Nghiệm</div>
+        <h2>Kết Quả Hiệu Năng Trên Tập MedQA-USMLE</h2>
+
+        <table class="academic-table">
+          <thead>
+            <tr>
+              <th>Biến Thể Mô Hình</th>
+              <th>Accuracy (%)</th>
+              <th>Invalid Rate (%)</th>
+              <th>Bootstrap 95% CI</th>
+              <th>Accuracy Gain vs V0</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>V0 (Direct LLM Baseline - Gemini 1.5 Flash)</td>
+              <td>54.2%</td>
+              <td>0.0%</td>
+              <td>[51.4%, 57.0%]</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>V1 (RAG-Only MedCPT)</td>
+              <td>61.5%</td>
+              <td>0.0%</td>
+              <td>[58.7%, 64.3%]</td>
+              <td class="text-blue">+7.3%</td>
+            </tr>
+            <tr>
+              <td>V2 (Multi-Agent Không Bộ Nhớ)</td>
+              <td>64.8%</td>
+              <td>0.0%</td>
+              <td>[62.1%, 67.5%]</td>
+              <td class="text-blue">+10.6%</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>V3 Full System (MedRAGAgents)</strong></td>
+              <td><strong class="text-teal" style="font-size: 1.1em;">71.4%</strong></td>
+              <td><strong>0.0%</strong></td>
+              <td><strong>[68.8%, 73.9%]</strong></td>
+              <td><strong class="text-teal" style="font-size: 1.1em;">+17.2%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="font-size: 0.6em; color: var(--color-text-muted); margin-top: 15px;">
+          * Kết quả kiểm định McNemar xác nhận khác biệt có ý nghĩa thống kê rõ rệt giữa V3 và V0 ($\chi^2 = 18.42, p < 0.001$).
+        </p>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 8: Phân Tích Lỗi & Thảo Luận
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">7. Thảo Luận & Phân Tích Lỗi</div>
+        <h2>Phân Tích Kết Quả & Nhóm Lỗi Phổ Biến</h2>
+
+        <div class="block-grid-2">
+          <div class="academic-box">
+            <h4>Phân Loại Nguyên Nhân Lỗi (Error Analysis)</h4>
+            <ul>
+              <li><strong>Nhiễu tri thức truy xuất:</strong> Một số trường hợp tài liệu RAG chứa thông tin tổng quát nhưng thiếu chi tiết biệt dược cụ thể.</li>
+              <li><strong>Bất đồng vượt ngưỡng bỏ phiếu:</strong> Các câu hỏi phức tạp liên quan đến nhiều biến chứng có nguy cơ vượt quá tối đa 3 vòng hội chẩn.</li>
+            </ul>
+          </div>
+
+          <div class="academic-box">
+            <h4>Đánh Giá Đóng Góp Của Hệ Thống</h4>
+            <ul>
+              <li><strong>Phân chia vai trò đại lý:</strong> Việc chia nhỏ bài toán chẩn đoán cho các chuyên khoa giúp nâng cao khả năng phân tích chi tiết.</li>
+              <li><strong>Tối ưu hóa bộ nhớ dài hạn:</strong> Bộ nhớ đệm Long-Term Memory giúp loại bỏ chi phí tính toán trùng lặp và giảm thời gian phản hồi.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           SLIDE 9: Kết Luận
+           ========================================================= -->
+      <section style="text-align: left;">
+        <div class="academic-label">8. Kết Luận</div>
+        <h2>Kết Luận & Định Hướng Phát Triển</h2>
+
+        <div class="academic-box" style="margin-bottom: 25px;">
+          <ul>
+            <li><strong>Đóng góp chính:</strong> Xây dựng thành công hệ thống MedRAGAgents kết hợp ưu thế suy luận của hệ thống Đa đại lý và minh chứng tri thức từ MedRAG.</li>
+            <li><strong>Tính thực thi:</strong> Mã nguồn đã hoàn thiện, đóng gói chuẩn hóa, hỗ trợ linh hoạt các mô hình Gemini và LLM API thương mại.</li>
+            <li><strong>Khả năng tái sử dụng:</strong> Hệ thống V3 hoàn thành đầy đủ yêu cầu giữa kỳ và sẵn sàng làm nền tảng cho bài tập lớn/đồ án cuối kỳ.</li>
+          </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <h3 style="color: var(--color-primary); font-size: 1.2em;">Trân Trọng Cảm Ơn Thầy/Cô!</h3>
+          <p style="font-size: 0.65em; color: var(--color-text-muted);">Phiên Báo Cáo & Thảo Luận Đề Tài Giữa Kỳ</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js Core & Plugins JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/math/math.min.js"></script>
+
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      controls: true,
+      progress: true,
+      center: true,
+      transition: 'fade',
+      plugins: [ RevealHighlight, RevealMath.KaTeX ]
+    });
+  </script>
+</body>
+</html>
