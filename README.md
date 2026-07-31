@@ -243,3 +243,21 @@ Các chỉ số thống kê đầu ra:
 - Slide thuyết trình: File slide PowerPoint widescreen 16:9 `MedRAGAgents_Midterm_Presentation.pptx`.
 - Module đánh giá tự động: Script tổng hợp thống kê `evaluate.py`.
 - Báo cáo hướng dẫn: Tài liệu hướng dẫn và minh chứng tuân thủ tại `README.md`.
+
+---
+
+## 13. Tài Liệu Tham Khảo & Repository Nguồn Dẫn (References & Citations)
+
+Hệ thống MedRAGAgents được kế thừa và phát triển dựa trên các nghiên cứu và repository nguồn mở chính sau:
+
+1. MedAgents (Domain-Expert Multi-Agent Reasoning):
+   - Repository: https://github.com/MedAgents/MedAgents
+   - Mô tả: Nguồn tham khảo về kiến trúc phân rã Agent theo miền chuyên khoa y tế và quy trình bỏ phiếu sửa đổi đồng thuận (Consensus Verification).
+
+2. MedRAG (Biomedical Retrieval-Augmented Generation):
+   - Repository: https://github.com/Teddy-XiongGZ/MedRAG
+   - Mô tả: Nguồn tham khảo về hệ thống truy xuất chứng cứ y khoa MedRAG, bao gồm các bộ chỉ mục vector MedCPT và tập cơ sở dữ liệu Textbooks/PubMed.
+
+3. MedQA Benchmark (MedQA-USMLE Dataset):
+   - Repository: https://github.com/jair-ai/MedQA
+   - Mô tả: Bộ dữ liệu chuẩn đánh giá các ca lâm sàng y khoa trắc nghiệm theo kỳ thi cấp phép hành nghề y khoa Hoa Kỳ (USMLE).
