@@ -1,0 +1,94 @@
+[run.py] Loading test data from ./datasets/MedQA/ …
+[run.py] Loaded 1273 records.
+/mnt/c/Users/long.nguyen4/Downloads/central-stuffs/uit-sdh/ml-sec/MedRAGAgents/agents/base_agent.py:59: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+
+=======================================================
+  Running V0 | google/gemini-3.6-flash | questions 0–9
+  Output → ./outputs/V0_predictions.jsonl
+=======================================================
+[V0]:   0%|          | 0/10 [00:00<?, ?it/s][V0]:  10%|█         | 1/10 [00:04<00:44,  4.93s/it][V0]:  20%|██        | 2/10 [00:09<00:37,  4.73s/it][V0]:  30%|███       | 3/10 [00:14<00:33,  4.81s/it][V0]:  40%|████      | 4/10 [00:19<00:29,  4.95s/it][V0]:  50%|█████     | 5/10 [00:25<00:26,  5.38s/it][V0]:  60%|██████    | 6/10 [00:30<00:20,  5.17s/it][V0]:  70%|███████   | 7/10 [00:35<00:15,  5.11s/it][V0]:  80%|████████  | 8/10 [00:39<00:09,  4.87s/it][V0]:  90%|█████████ | 9/10 [00:44<00:04,  4.88s/it][V0]: 100%|██████████| 10/10 [00:47<00:00,  4.29s/it][V0]: 100%|██████████| 10/10 [00:47<00:00,  4.77s/it]
+
+  [V0] Accuracy: 5/10 = 0.5000
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3989.84it/s]
+[RAGAgent] Retrieval system ready: MedCPT × Textbooks
+
+=======================================================
+  Running V1 | google/gemini-3.6-flash | questions 0–9
+  Output → ./outputs/V1_predictions.jsonl
+=======================================================
+[V1]:   0%|          | 0/10 [00:00<?, ?it/s][V1]:  10%|█         | 1/10 [00:14<02:06, 14.11s/it][V1]:  20%|██        | 2/10 [00:28<01:52, 14.11s/it][V1]:  30%|███       | 3/10 [00:42<01:39, 14.27s/it][V1]:  40%|████      | 4/10 [00:57<01:27, 14.65s/it][V1]:  50%|█████     | 5/10 [01:11<01:11, 14.25s/it][V1]:  60%|██████    | 6/10 [01:24<00:55, 13.84s/it][V1]:  70%|███████   | 7/10 [01:40<00:43, 14.49s/it][V1]:  80%|████████  | 8/10 [01:57<00:30, 15.39s/it][V1]:  90%|█████████ | 9/10 [02:08<00:14, 14.12s/it][V1]: 100%|██████████| 10/10 [02:21<00:00, 13.65s/it][V1]: 100%|██████████| 10/10 [02:21<00:00, 14.16s/it]
+
+  [V1] Accuracy: 7/10 = 0.7000
+
+=======================================================
+  Running V2 | google/gemini-3.6-flash | questions 0–9
+  Output → ./outputs/V2_predictions.jsonl
+=======================================================
+[V2]:   0%|          | 0/10 [00:00<?, ?it/s][V2]:  10%|█         | 1/10 [01:00<09:08, 60.97s/it][V2]:  20%|██        | 2/10 [01:45<06:49, 51.17s/it][V2]:  30%|███       | 3/10 [02:32<05:45, 49.39s/it][V2]:  40%|████      | 4/10 [03:55<06:16, 62.68s/it][V2]:  50%|█████     | 5/10 [05:02<05:20, 64.08s/it][V2]:  60%|██████    | 6/10 [05:54<04:00, 60.21s/it][V2]:  70%|███████   | 7/10 [06:44<02:50, 56.78s/it][V2]:  80%|████████  | 8/10 [07:39<01:52, 56.24s/it][V2]:  90%|█████████ | 9/10 [08:26<00:53, 53.44s/it][V2]: 100%|██████████| 10/10 [09:15<00:00, 52.00s/it][V2]: 100%|██████████| 10/10 [09:15<00:00, 55.57s/it]
+
+  [V2] Accuracy: 8/10 = 0.8000
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6322.13it/s]
+[RAGAgent] Retrieval system ready: MedCPT × Textbooks
+
+=======================================================
+  Running V3 | google/gemini-3.6-flash | questions 0–9
+  Output → ./outputs/V3_predictions.jsonl
+=======================================================
+[V3]:   0%|          | 0/10 [00:00<?, ?it/s][V3]:  10%|█         | 1/10 [00:02<00:18,  2.01s/it][V3]:  20%|██        | 2/10 [00:04<00:16,  2.01s/it][V3]:  30%|███       | 3/10 [00:06<00:14,  2.01s/it][V3]:  40%|████      | 4/10 [00:08<00:12,  2.01s/it][V3]:  50%|█████     | 5/10 [00:10<00:10,  2.01s/it][V3]:  60%|██████    | 6/10 [00:12<00:08,  2.01s/it][V3]:  70%|███████   | 7/10 [00:14<00:06,  2.01s/it][V3]:  80%|████████  | 8/10 [01:21<00:45, 22.76s/it][V3]:  90%|█████████ | 9/10 [02:28<00:36, 36.77s/it][V3]: 100%|██████████| 10/10 [03:30<00:00, 44.50s/it][V3]: 100%|██████████| 10/10 [03:30<00:00, 21.07s/it]
+
+  [V3] Accuracy: 8/10 = 0.8000
+
+=======================================================
+  EVALUATION RESULTS
+=======================================================
+[Evaluator] Loaded 10 records for V0
+[Evaluator] Loaded 10 records for V1
+[Evaluator] Loaded 17 records for V2
+[Evaluator] Loaded 20 records for V3
+
+════════════════════════════════════════════════════════════
+  LEADERBOARD
+════════════════════════════════════════════════════════════
++---------+-------+---------+----------+--------------+------------------+
+| Variant | Total | Correct | Accuracy | Invalid Rate | 95% CI           |
++---------+-------+---------+----------+--------------+------------------+
+| V0      | 10    | 5       | 0.5000   | 0.4000       | (0.2000, 0.8000) |
+| V1      | 10    | 7       | 0.7000   | 0.0000       | (0.4000, 1.0000) |
+| V2      | 17    | 14      | 0.8235   | 0.0000       | (0.6471, 1.0000) |
+| V3      | 20    | 16      | 0.8000   | 0.0000       | (0.6000, 0.9500) |
++---------+-------+---------+----------+--------------+------------------+
+
+  Accuracy gain (V3 − V0): +0.3000
+
+
+──────────────────────────────────────────────────
+  Paired Comparison: V0 (baseline) vs V3 (full)
+──────────────────────────────────────────────────
+  Win  (V3 correct, V0 wrong): 3
+  Loss (V0 correct, V3 wrong): 0
+  Tie :                         7
+  Win rate: 0.3000 | Loss rate: 0.0000
+  McNemar χ²=1.3333, p≈0.2482
+
+
+──────────────────────────────────────────────────
+  Error Analysis — V3 (top 10)
+──────────────────────────────────────────────────
+  01. [WRONG: pred=B, gold=C]
+      Q: A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending…
+  02. [WRONG: pred=C, gold=E]
+      Q: A 39-year-old man presents to the emergency department because of progressively worsening chest pain and nausea that sta…
+  03. [WRONG: pred=B, gold=C]
+      Q: A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending…
+  04. [WRONG: pred=C, gold=E]
+      Q: A 39-year-old man presents to the emergency department because of progressively worsening chest pain and nausea that sta…
+
