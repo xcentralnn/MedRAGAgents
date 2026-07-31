@@ -198,33 +198,61 @@ File `run.py` tiếp nhận các tham số dòng lệnh sau:
 
 ---
 
-## 10. Hướng Dẫn Thực Thi Dự Án
+## 10. Hướng Dẫn Thực Thi Dự Án (Execution Guide V0 → V3)
 
 Thực thi các lệnh bằng Python trong môi trường WSL hoặc Linux Bash.
 
-### 1. Chạy Baseline (V0) trên 10 câu hỏi mẫu
+### 0. Tải dữ liệu chứng cứ y khoa gốc (Corpus Textbooks)
+
+Trước khi chạy các biến thể có RAG (V1, V3), chạy script để tải tự động toàn bộ 200MB+ dữ liệu sách giáo khoa y khoa từ HuggingFace Hub:
 
 ```bash
-python3 run.py --variant V0 --n 10 --llm google/gemini-3.6-flash --delay 12 --dataset_dir ../MedAgents/datasets/MedQA/
+python3 download_corpus.py
 ```
 
-### 2. Chạy Full System (V3) trên 10 câu hỏi mẫu
+---
 
-```bash
-python3 run.py --variant V3 --n 10 --llm google/gemini-3.6-flash --delay 12 --dataset_dir ../MedAgents/datasets/MedQA/
-```
+### 1. Chạy Từng Biến Thể Riêng Lẻ (V0, V1, V2, V3)
 
-### 3. Chạy Full System (V3) trên Toàn bộ Test Set (N = 1,273)
+- **Chạy Baseline Direct CoT (V0)**:
+  ```bash
+  python3 run.py --variant V0 --n 10 --delay 2.0 --evaluate
+  ```
 
-```bash
-python3 run.py --variant V3 --n -1 --llm google/gemini-3.6-flash --delay 12 --dataset_dir ../MedAgents/datasets/MedQA/
-```
+- **Chạy RAG-Only MedRAG (V1)**:
+  ```bash
+  python3 run.py --variant V1 --n 10 --delay 2.0 --evaluate
+  ```
 
-### 4. Chạy Tất cả Biến thể (V0 đến V3) và Tự động Đánh giá
+- **Chạy Multi-Agent 5 Chuyên Gia (V2)**:
+  ```bash
+  python3 run.py --variant V2 --n 10 --delay 2.0 --evaluate
+  ```
 
-```bash
-python3 run.py --variant ALL --n 50 --delay 12 --dataset_dir ../MedAgents/datasets/MedQA/ --evaluate
-```
+- **Chạy Full System Multi-Agent + RAG + Memory (V3)**:
+  ```bash
+  python3 run.py --variant V3 --n 10 --delay 2.0 --evaluate
+  ```
+
+---
+
+### 2. Chạy Tự Động Tất Cả Các Biến Thể (V0 → V3)
+
+- **Chạy thử nghiệm trên N = 10 câu hỏi mẫu**:
+  ```bash
+  python3 run.py --variant ALL --n 10 --delay 2.0 --evaluate
+  ```
+
+- **Chạy toàn bộ tập dữ liệu MedQA-USMLE (N = 1,273 câu hỏi)**:
+  ```bash
+  python3 run.py --variant ALL --n -1 --delay 2.0 --evaluate
+  ```
+
+- **Chạy lưu log trực tiếp ra file (`run_execution.log`)**:
+  ```bash
+  PYTHONUNBUFFERED=1 python3 run.py --variant ALL --n 10 --delay 2.0 --evaluate 2>&1 | tee outputs/run_execution.log
+  ```
+
 
 ---
 
