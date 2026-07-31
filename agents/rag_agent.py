@@ -74,9 +74,13 @@ class RAGAgent:
         snippets, scores = [], []
 
         if self.use_rag and self.retrieval_system is not None:
-            snippets, scores = self.retrieval_system.retrieve(question, k=k)
-            context = self._build_context(snippets)
-            raw = self._call_with_context(question, options_str, context)
+            try:
+                snippets, scores = self.retrieval_system.retrieve(question, k=k)
+                context = self._build_context(snippets)
+                raw = self._call_with_context(question, options_str, context)
+            except Exception as e:
+                print(f"[RAGAgent] Retrieval error: {e}, falling back to CoT")
+                raw = self._call_direct_cot(question, options_str)
         else:
             raw = self._call_direct_cot(question, options_str)
 
