@@ -174,7 +174,9 @@ class V2MultiAgent:
 
         # 4. Verifier voting + final answer
         all_domains = q_domains + o_domains
-        verif = self.verifier_agent.verify_and_answer(syn_report, all_domains)
+        verif = self.verifier_agent.verify_and_answer(
+            syn_report, all_domains, question=question, options=options_str
+        )
         rec.update({
             "pred_answer":      verif["pred_answer"],
             "raw_output":       verif["raw_output"],
@@ -272,7 +274,7 @@ class V3FullSystem:
         # 5. Verifier voting + final answer
         all_domains = q_domains + o_domains
         verif = self.verifier_agent.verify_and_answer(
-            self.mem.short.get("syn_report"), all_domains
+            self.mem.short.get("syn_report"), all_domains, question=question, options=options_str
         )
         rec.update({
             "pred_answer":      verif["pred_answer"],
