@@ -240,40 +240,68 @@ class Evaluator:
             })
         return rows
 
-    def print_leaderboard(self):
+    # ── paired comparison ────────────────────────────────────
+    def paired_comparison(self, base: str = "V0", full: str = "V3") -> dict:
+        if base not in self.data or full not in self.data:
+            return {}
+        wlt = win_loss_tie(self.data[base], self.data[full])
+        mc  = mcnemar_test(self.data[base], self.data[full])
+        return {"win_loss_tie": wlt, "mcnemar": mc}
+
+    # ── report generation ─────────────────────────────────────
+    def generate_text_report(self) -> str:
+        lines = []
         rows = self.leaderboard()
         if not rows:
-            print("No prediction files found.")
-            return
+            return "No prediction files found."
+
         header = ["Variant", "Total", "Correct", "Accuracy", "Invalid Rate", "95% CI"]
         col_w = [max(len(h), max(len(str(r[h])) for r in rows)) + 2 for h in header]
         sep   = "+" + "+".join("-" * w for w in col_w) + "+"
         fmt   = "|" + "|".join(f" {{:<{w-1}}}" for w in col_w) + "|"
 
-        print("\n" + "═"*60)
-        print("  LEADERBOARD")
-        print("═"*60)
-        print(sep)
-        print(fmt.format(*header))
-        print(sep)
+        lines.append("=" * 70)
+        lines.append("  MedRAGAgents BENCHMARK LEADERBOARD (PLAIN TEXT TABLE)")
+        lines.append("=" * 70)
+        lines.append(sep)
+        lines.append(fmt.format(*header))
+        lines.append(sep)
         for r in rows:
-            print(fmt.format(*[str(r[h]) for h in header]))
-        print(sep)
+            lines.append(fmt.format(*[str(r[h]) for h in header]))
+        lines.append(sep)
 
-        # Accuracy gain
         if "V0" in self.data and "V3" in self.data:
             v0_acc = compute_metrics(self.data["V0"])["accuracy"]
             v3_acc = compute_metrics(self.data["V3"])["accuracy"]
-            print(f"\n  Accuracy gain (V3 − V0): {v3_acc - v0_acc:+.4f}")
-        print()
+            lines.append(f"\n  Accuracy Gain (V3 - V0): {v3_acc - v0_acc:+.4f}\n")
 
-    # ── paired comparison ────────────────────────────────────
-    def paired_comparison(self, base: str = "V0", full: str = "V3") -> dict:
-        if base not in self.data or full not in self.data:
-            return {}
-        wlt  = win_loss_tie(self.data[base], self.data[full])
-        mc   = mcnemar_test(self.data[base], self.data[full])
-        return {"win_loss_tie": wlt, "mcnemar": mc}
+        r_paired = self.paired_comparison("V0", "V3")
+        if r_paired:
+            wlt = r_paired["win_loss_tie"]
+            mc = r_paired["mcnemar"]
+            lines.append("-" * 50)
+            lines.append("  Paired Comparison: V0 (baseline) vs V3 (full)")
+            lines.append("-" * 50)
+            lines.append(f"  Win  (V3 correct, V0 wrong): {wlt['win']} ({wlt['win_rate']*100:.1f}%)")
+            lines.append(f"  Loss (V0 correct, V3 wrong): {wlt['loss']} ({wlt['loss_rate']*100:.1f}%)")
+            lines.append(f"  Tie  (Both correct / wrong): {wlt['tie']}")
+            lines.append(f"  McNemar statistic           : {mc['statistic']} (p ≈ {mc['p_approx']})\n")
+
+        if "V3" in self.data:
+            errors = error_analysis(self.data["V3"], top_n=10)
+            lines.append("-" * 50)
+            lines.append("  Error Analysis — V3 (top 10)")
+            lines.append("-" * 50)
+            for i, e in enumerate(errors, 1):
+                tag = "[INVALID]" if e["is_invalid"] else f"[WRONG: pred={e['pred']}, gold={e['gold']}]"
+                lines.append(f"  {i:02d}. {tag}")
+                lines.append(f"      Q: {e['question']}")
+            lines.append("")
+
+        return "\n".join(lines)
+
+    def print_leaderboard(self):
+        print(self.generate_text_report())
 
     def print_paired_comparison(self, base="V0", full="V3"):
         r = self.paired_comparison(base, full)
@@ -292,7 +320,6 @@ class Evaluator:
         print(f"  McNemar χ²={mc['statistic']}, p≈{mc['p_approx']}")
         print()
 
-    # ── error analysis ───────────────────────────────────────
     def print_error_analysis(self, variant: str = "V3", top_n: int = 10):
         if variant not in self.data:
             print(f"No data for {variant}")
@@ -307,11 +334,21 @@ class Evaluator:
             print(f"      Q: {e['question']}")
         print()
 
+    def save_reports(self, output_dir: str = None):
+        target_dir = output_dir or self.pred_dir
+        os.makedirs(target_dir, exist_ok=True)
+
+        txt_report = self.generate_text_report()
+        txt_path = os.path.join(target_dir, "evaluation_report.txt")
+        with open(txt_path, "w", encoding="utf-8") as f:
+            f.write(txt_report)
+        print(f"[Evaluator] Saved Plain Text Report to {txt_path}")
+
     # ── full report ──────────────────────────────────────────
     def full_report(self):
-        self.print_leaderboard()
-        self.print_paired_comparison()
-        self.print_error_analysis()
+        txt_report = self.generate_text_report()
+        print("\n" + txt_report)
+        self.save_reports()
 
 
 # ─────────────────────────────────────────────────────────────
@@ -328,3 +365,5 @@ if __name__ == "__main__":
 
     ev = Evaluator(pred_dir=args.pred_dir, dataset_dir=args.dataset_dir)
     ev.full_report()
+
+

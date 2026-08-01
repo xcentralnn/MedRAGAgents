@@ -1,0 +1,33 @@
+======================================================================
+  MedRAGAgents BENCHMARK LEADERBOARD (PLAIN TEXT TABLE)
+======================================================================
++---------+-------+---------+----------+--------------+------------------+
+| Variant | Total | Correct | Accuracy | Invalid Rate | 95% CI           |
++---------+-------+---------+----------+--------------+------------------+
+| V0      | 10    | 5       | 0.5000   | 0.4000       | (0.2000, 0.8000) |
+| V1      | 10    | 7       | 0.7000   | 0.0000       | (0.4000, 1.0000) |
+| V2      | 17    | 14      | 0.8235   | 0.0000       | (0.6471, 1.0000) |
+| V3      | 20    | 16      | 0.8000   | 0.0000       | (0.6000, 0.9500) |
++---------+-------+---------+----------+--------------+------------------+
+
+  Accuracy Gain (V3 - V0): +0.3000
+
+--------------------------------------------------
+  Paired Comparison: V0 (baseline) vs V3 (full)
+--------------------------------------------------
+  Win  (V3 correct, V0 wrong): 3 (30.0%)
+  Loss (V0 correct, V3 wrong): 0 (0.0%)
+  Tie  (Both correct / wrong): 7
+  McNemar statistic           : 1.3333 (p ≈ 0.2482)
+
+--------------------------------------------------
+  Error Analysis — V3 (top 10)
+--------------------------------------------------
+  01. [WRONG: pred=B, gold=C]
+      Q: A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending…
+  02. [WRONG: pred=C, gold=E]
+      Q: A 39-year-old man presents to the emergency department because of progressively worsening chest pain and nausea that sta…
+  03. [WRONG: pred=B, gold=C]
+      Q: A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending…
+  04. [WRONG: pred=C, gold=E]
+      Q: A 39-year-old man presents to the emergency department because of progressively worsening chest pain and nausea that sta…

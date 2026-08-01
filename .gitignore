@@ -22,7 +22,6 @@ __pycache__/
 node_modules/
 
 # Large Datasets & Corpus Embeddings
-corpus/
 datasets/MedQA/test.jsonl
 
 # System & IDE

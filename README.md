@@ -68,6 +68,33 @@ Hệ thống tuân thủ đầy đủ các yêu cầu trong Đề tài giữa k�
 | Chỉ số đánh giá | Accuracy, Invalid Rate, Accuracy Gain, McNemar Test, 95% Bootstrap CI.        | Class`Evaluator` tính toán đầy đủ các chỉ số thống kê.                       | `evaluate.py`                           |
 | Gói sản phẩm      | Source code, file dự đoán jsonl, script đánh giá, slide, báo cáo.     | Mã nguồn chạy được, outputs jsonl, slide`MedRAGAgents_Midterm_Presentation.pptx`. | Thư mục gốc                            |
 
+### Chi Tiết Cơ Chế Hoạt Động Bên Dưới Của Từng Tiêu Chí
+
+1. **System Task (Ràng buộc đầu ra & Trích xuất đáp án)**:
+   - Trong `agents/base_agent.py` và `pipeline.py`, tất cả Prompt gửi cho LLM đều có đính kèm System Directive cưỡng chế định dạng output (`Strict Formatting Prompt`).
+   - Hàm `parse_answer_from_text()` sử dụng Regular Expression (`re.search(r'Option:\s*([A-E])', text)`) để trích xuất chính xác 01 ký tự chọn (`A`, `B`, `C`, `D`, `E`). Lời giải thích chẩn đoán được trích xuất lưu tại trường `syn_report`.
+2. **Baseline (V0) — Direct LLM với Chain-of-Thought**:
+   - Triển khai trong class `V0DirectLLM` (`pipeline.py`). Chạy LLM suy luận CoT đơn bước trực tiếp (`"Let's think step by step"`) không qua Agent phân rã hay RAG retrieval.
+3. **RAG-Only (V1) — Truy xuất chứng cứ MedRAG**:
+   - Triển khai trong class `V1RAGOnly` (`agents/rag_agent.py`). Sử dụng mô hình nhúng y khoa `MedCPT-Query-Encoder` nhúng văn bản câu hỏi thành vector 768 chiều, tính độ tương đồng vector (Cosine Similarity) để truy xuất **Top-32 đoạn trích y học liên quan nhất** từ `Textbooks corpus` (`corpus/textbooks/`) bơm vào ngữ cảnh cho LLM.
+4. **Multi-Agent (V2) — Đội ngũ 5 Agent Chuyên gia (Stateless)**:
+   - Triển khai trong class `V2MultiAgent` (`pipeline.py`):
+     - `DomainAgent`: Phân loại kịch bản lâm sàng thành 5 chuyên khoa y tế chính.
+     - `AnalysisAgent`: Kích hoạt 5 Agent chuyên gia tương ứng phân tích độc lập theo từng góc nhìn chuyên môn.
+     - `SynthesisAgent`: Hợp nhất 5 bài phân tích chuyên gia thành báo cáo chẩn đoán lâm sàng (`Synthesis Report`).
+     - `VerifierAgent`: Điều phối vòng lặp hội chẩn (Consensus Verification), các Agent chuyên khoa bỏ phiếu (`YES`/`NO`) và sửa đổi báo cáo đến khi đạt đồng thuận (tối đa 3 vòng).
+5. **Full System (V3) — Multi-Agent + MedRAG + Dual Memory**:
+   - Triển khai trong class `V3FullSystem` (`pipeline.py`). Kết hợp toàn bộ quy trình Multi-Agent của V2, bằng chứng truy xuất MedRAG Top-32 của V1 và quản lý trạng thái/cache với Dual-Layer Memory.
+6. **Dual Memory Mechanism (Short-Term & Long-Term Memory)**:
+   - `ShortTermMemory` (`memory.py`): Tồn tại dưới dạng bộ nhớ RAM trong suốt vòng đời xử lý 01 câu hỏi, truyền dữ liệu trung gian giữa các Agent và tự động `reset_short()` khi chuyển sang câu mới.
+   - `LongTermMemory` (`memory.py`): Tạo khóa băm SHA-256 từ `question.strip() + str(options)` lưu trữ persistent đĩa tại `./memory/long_term_cache.json`. Nếu gặp câu hỏi đã từng suy luận trước đó (`Cache Hit`), kết quả được trả về tức thì (0ms, 0 token).
+7. **Benchmark Data (MedQA-USMLE Test Set)**:
+   - Đọc dữ liệu dạng stream bằng `jsonlines` từ `datasets/MedQA/test.jsonl` ($N=1,273$). Hỗ trợ điều khiển vị trí bắt đầu (`--start`) và số lượng câu (`--n`), kèm cơ chế `time.sleep(delay)` để quản lý Rate Limit (RPM).
+8. **Chỉ số đánh giá (Evaluator Module)**:
+   - Triển khai trong class `Evaluator` (`evaluate.py`). Tính toán Accuracy, Invalid Rate, Accuracy Gain ($V3 - V0$), 95% Bootstrap Confidence Interval (1,000 lượt re-sampling), Paired Win/Loss/Tie và kiểm định thống kê McNemar $\chi^2$ ($p\text{-value}$). Kết quả được tự động xuất ra file bảng văn bản [outputs/evaluation_report.txt](file:///c:/Users/long.nguyen4/Downloads/central-stuffs/uit-sdh/ml-sec/MedRAGAgents/outputs/evaluation_report.txt).
+9. **Gói sản phẩm & Điều phối CLI**:
+   - `run.py` điều phối toàn bộ pipeline, hỗ trợ chế độ `--variant ALL` để chạy tuần tự tất cả các biến thể, tự động ghi đứt đoạn kết quả xuống `./outputs/*_predictions.jsonl` (incremental saving) để tránh mất dữ liệu.
+
 ---
 
 ## 5. Định Dạng Bộ Dữ Liệu và Bản Ghi Dự Đoán
