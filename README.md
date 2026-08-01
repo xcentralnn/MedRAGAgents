@@ -25,54 +25,54 @@ Hệ thống MedRAGAgents giải quyết các hạn chế trên thông qua 3 tr�
 
 ```mermaid
 flowchart TD
-    subgraph INPUT["📥 1. Đầu Vào Dữ Liệu"]
-        A["<b>Câu hỏi Lâm sàng MedQA</b><br/>(question, options A-E, gold_answer)"]
+    subgraph INPUT["1. Dau Vao Du Lieu"]
+        A["<b>Cau hoi Lam sang MedQA</b><br/>(question, options A-E, gold_answer)"]
     end
 
-    subgraph MEMORY_CHECK["🧠 2. Kiểm Tra Bộ Nhớ Dài Hạn (Long-Term Memory)"]
-        B{"<b>Khóa Băm SHA-256</b><br/>SHA256(question + options)"}
-        CacheHit["<b>CACHE HIT (Đã làm)</b><br/>Tải kết quả từ memory/long_term_cache.json<br/>⚡ 0ms | 0 Token"]
-        CacheMiss["<b>CACHE MISS (Câu mới)</b><br/>Khởi tạo ShortTermMemory trong RAM"]
+    subgraph MEMORY_CHECK["2. Kiem Tra Bo Nho Dai Han (Long-Term Memory)"]
+        B{"<b>Khoa Bam SHA-256</b><br/>SHA256(question + options)"}
+        CacheHit["<b>CACHE HIT (Da lam)</b><br/>Tai ket qua tu memory/long_term_cache.json<br/>0ms | 0 Token"]
+        CacheMiss["<b>CACHE MISS (Cau moi)</b><br/>Khoi tao ShortTermMemory trong RAM"]
     end
 
-    subgraph AGENT_PIPELINE["🤖 3. Luồng Xử Lý Multi-Agent & MedRAG (V3 Full System)"]
+    subgraph AGENT_PIPELINE["3. Luong Xu Ly Multi-Agent & MedRAG (V3 Full System)"]
         
-        subgraph STEP1["Bước 3.1: Phân Loại Miền Chuyên Khoa"]
-            C["<b>DomainAgent</b><br/>Phân tích kịch bản lâm sàng & chọn Top 5 chuyên khoa chính"]
+        subgraph STEP1["Buoc 3.1: Phan Loai Mien Chuyen Khoa"]
+            C["<b>DomainAgent</b><br/>Phan tich kich ban lam sang & chon Top 5 chuyen khoa chinh"]
         end
 
-        subgraph STEP2["Bước 3.2: Phân Tích Chuyên Gia Độc Lập"]
-            D1["<b>Pathology Agent</b><br/>Phân tích Bệnh lý học"]
-            D2["<b>Pharmacology Agent</b><br/>Phân tích Dược lý học"]
-            D3["<b>Internal Med Agent</b><br/>Phân tích Nội khoa"]
-            D4["<b>Surgery Agent</b><br/>Phân tích Ngoại khoa"]
-            D5["<b>Pediatrics Agent</b><br/>Phân tích Nhi khoa"]
+        subgraph STEP2["Buoc 3.2: Phan Tich Chuyen Gia Doc Lap"]
+            D1["<b>Pathology Agent</b><br/>Phan tich Benh ly hoc"]
+            D2["<b>Pharmacology Agent</b><br/>Phan tich Duoc ly hoc"]
+            D3["<b>Internal Med Agent</b><br/>Phan tich Noi khoa"]
+            D4["<b>Surgery Agent</b><br/>Phan tich Ngoai khoa"]
+            D5["<b>Pediatrics Agent</b><br/>Phan tich Nhi khoa"]
         end
 
-        subgraph STEP3["Bước 3.3: Truy Xuất Tri Thức Y Khoa"]
-            E1["<b>RAGAgent</b><br/>Mã hóa MedCPT-Query-Encoder"]
+        subgraph STEP3["Buoc 3.3: Truy Xuat Tri Thuc Y Khoa"]
+            E1["<b>RAGAgent</b><br/>Ma hoa MedCPT-Query-Encoder"]
             E2[("<b>Corpus Textbooks</b><br/>Gray's Anatomy, Harrison's...")]
-            E3["<b>Top-32 Chứng Cứ Y Học</b><br/>Đoạn trích tương đồng cao nhất"]
+            E3["<b>Top-32 Chung Cu Y Hoc</b><br/>Doan trich tuong dong cao nhat"]
         end
 
-        subgraph STEP4["Bước 3.4: Tổng Hợp Báo Cáo Y Khoa"]
-            F["<b>SynthesisAgent</b><br/>Hợp nhất 5 bài phân tích chuyên gia + 32 đoạn RAG<br/>➡️ Synthesis Report"]
+        subgraph STEP4["Buoc 3.4: Tong Hop Bao Cao Y Khoa"]
+            F["<b>SynthesisAgent</b><br/>Hop nhat 5 bai phan tich chuyen gia + 32 doan RAG<br/>-> Synthesis Report"]
         end
 
-        subgraph STEP5["Bước 3.5: Vòng Lặp Hội Chẩn Bỏ Phiếu (Consensus Verification)"]
-            G{"<b>VerifierAgent</b><br/>5 Agent Chuyên gia Bỏ phiếu (YES/NO)<br/>(Tối đa 3 vòng)"}
-            Revise["<b>SynthesisAgent</b><br/>Tiếp thu góp ý & Cập nhật Báo cáo"]
+        subgraph STEP5["Buoc 3.5: Vong Lap Hoi Chan Bo Phieu (Consensus Verification)"]
+            G{"<b>VerifierAgent</b><br/>5 Agent Chuyen gia Bo phieu (YES/NO)<br/>(Toi da 3 vong)"}
+            Revise["<b>SynthesisAgent</b><br/>Tiep thu gop y & Cap nhat Bao cao"]
         end
 
-        subgraph STEP6["Bước 3.6: Trích Xuất Đáp Án Chuẩn"]
-            H["<b>Strict Output Parser</b><br/>Trích xuất đúng 1 lựa chọn (A/B/C/D/E)<br/>Invalid Rate = 0.0%"]
+        subgraph STEP6["Buoc 3.6: Trich Xuat Dap An Chuan"]
+            H["<b>Strict Output Parser</b><br/>Trich xuat dung 1 lua chon (A/B/C/D/E)<br/>Invalid Rate = 0.0%"]
         end
     end
 
-    subgraph OUTPUT["💾 4. Đầu Ra & Persistence"]
-        I["<b>Ghi Cache Dài Hạn</b><br/>Cập nhật memory/long_term_cache.json"]
-        J["<b>File Kết Quả Jsonl</b><br/>outputs/V3_predictions.jsonl"]
-        K["<b>Báo Cáo Đánh Giá</b><br/>outputs/evaluation_report.txt"]
+    subgraph OUTPUT["4. Dau Ra & Persistence"]
+        I["<b>Ghi Cache Dai Han</b><br/>Cap nhat memory/long_term_cache.json"]
+        J["<b>File Ket Qua Jsonl</b><br/>outputs/V3_predictions.jsonl"]
+        K["<b>Bao Cao Danh Gia</b><br/>outputs/evaluation_report.txt"]
     end
 
     %% Flow connections
@@ -87,11 +87,26 @@ flowchart TD
     D1 & D2 & D3 & D4 & D5 & E3 --> F
     F --> G
     
-    G -- "Ý kiến bất đồng (NO)" --> Revise --> G
-    G -- "Đạt Đồng thuận (YES) / Hết 3 vòng" --> H
+    G -- "Y kien bat dong (NO)" --> Revise --> G
+    G -- "Dat Dong thuan (YES) / Het 3 vong" --> H
     
     H --> I & J --> K
 ```
+
+### Các Bước Xử Lý Chi Tiết
+
+Luồng xử lý một câu hỏi lâm sàng trong hệ thống MedRAGAgents trải qua 5 bước chính:
+
+1. Bước 1 - Phân loại vùng tri thức (`DomainAgent`):
+   Hệ thống đọc câu hỏi lâm sàng và các phương án chọn, sau đó phân loại thành 5 chuyên khoa chính cho câu hỏi và 2 chuyên khoa liên quan cho phương án lựa chọn.
+2. Bước 2 - Phân tích chuyên sâu từng miền (`AnalysisAgent`):
+   Kích hoạt các Agent chuyên gia y khoa tương ứng để phân tích ca bệnh độc lập từ góc nhìn chuyên môn của từng ngành (ví dụ: góc nhìn Bệnh lý học, góc nhìn Dược lý học).
+3. Bước 3 - Truy xuất chứng cứ y khoa (`RAGAgent`):
+   Sử dụng bộ truy xuất MedCPT để tìm kiếm Top-32 đoạn văn bản chứng cứ có độ tương đồng cao nhất từ cơ sở dữ liệu y khoa Textbooks.
+4. Bước 4 - Tổng hợp báo cáo y khoa (`SynthesisAgent`):
+   Tổng hợp toàn bộ các báo cáo phân tích chuyên gia và dữ liệu RAG thu thập được thành một bản báo cáo phân tích y khoa hợp nhất (Synthesis Report).
+5. Bước 5 - Hội chẩn bỏ phiếu & Sửa đổi (`VerifierAgent`):
+   Các Agent chuyên khoa tiến hành đánh giá và bỏ phiếu đồng thuận (YES/NO) trên báo cáo hợp nhất. Nếu có ý kiến bất đồng (NO), Agent đưa ra đề xuất sửa đổi, báo cáo được cập nhật và bỏ phiếu lại (tối đa 3 vòng) trước khi trích xuất đáp án lựa chọn cuối cùng (A, B, C, D hoặc E).
 
 ### Các Bước Xử Lý Chi Tiết
 
