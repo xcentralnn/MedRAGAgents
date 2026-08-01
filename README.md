@@ -21,6 +21,80 @@ Hệ thống MedRAGAgents giải quyết các hạn chế trên thông qua 3 tr�
 
 ## 2. Cách Thức Hoạt Động của Hệ Thống (System Workflow)
 
+### Sơ Đồ Quy Trình Hoạt Động Tổng Thể (Mermaid Architecture Diagram)
+
+```mermaid
+flowchart TD
+    subgraph INPUT["📥 1. Đầu Vào Dữ Liệu"]
+        A["<b>Câu hỏi Lâm sàng MedQA</b><br/>(question, options A-E, gold_answer)"]
+    end
+
+    subgraph MEMORY_CHECK["🧠 2. Kiểm Tra Bộ Nhớ Dài Hạn (Long-Term Memory)"]
+        B{"<b>Khóa Băm SHA-256</b><br/>SHA256(question + options)"}
+        CacheHit["<b>CACHE HIT (Đã làm)</b><br/>Tải kết quả từ memory/long_term_cache.json<br/>⚡ 0ms | 0 Token"]
+        CacheMiss["<b>CACHE MISS (Câu mới)</b><br/>Khởi tạo ShortTermMemory trong RAM"]
+    end
+
+    subgraph AGENT_PIPELINE["🤖 3. Luồng Xử Lý Multi-Agent & MedRAG (V3 Full System)"]
+        
+        subgraph STEP1["Bước 3.1: Phân Loại Miền Chuyên Khoa"]
+            C["<b>DomainAgent</b><br/>Phân tích kịch bản lâm sàng & chọn Top 5 chuyên khoa chính"]
+        end
+
+        subgraph STEP2["Bước 3.2: Phân Tích Chuyên Gia Độc Lập"]
+            D1["<b>Pathology Agent</b><br/>Phân tích Bệnh lý học"]
+            D2["<b>Pharmacology Agent</b><br/>Phân tích Dược lý học"]
+            D3["<b>Internal Med Agent</b><br/>Phân tích Nội khoa"]
+            D4["<b>Surgery Agent</b><br/>Phân tích Ngoại khoa"]
+            D5["<b>Pediatrics Agent</b><br/>Phân tích Nhi khoa"]
+        end
+
+        subgraph STEP3["Bước 3.3: Truy Xuất Tri Thức Y Khoa"]
+            E1["<b>RAGAgent</b><br/>Mã hóa MedCPT-Query-Encoder"]
+            E2[("<b>Corpus Textbooks</b><br/>Gray's Anatomy, Harrison's...")]
+            E3["<b>Top-32 Chứng Cứ Y Học</b><br/>Đoạn trích tương đồng cao nhất"]
+        end
+
+        subgraph STEP4["Bước 3.4: Tổng Hợp Báo Cáo Y Khoa"]
+            F["<b>SynthesisAgent</b><br/>Hợp nhất 5 bài phân tích chuyên gia + 32 đoạn RAG<br/>➡️ Synthesis Report"]
+        end
+
+        subgraph STEP5["Bước 3.5: Vòng Lặp Hội Chẩn Bỏ Phiếu (Consensus Verification)"]
+            G{"<b>VerifierAgent</b><br/>5 Agent Chuyên gia Bỏ phiếu (YES/NO)<br/>(Tối đa 3 vòng)"}
+            Revise["<b>SynthesisAgent</b><br/>Tiếp thu góp ý & Cập nhật Báo cáo"]
+        end
+
+        subgraph STEP6["Bước 3.6: Trích Xuất Đáp Án Chuẩn"]
+            H["<b>Strict Output Parser</b><br/>Trích xuất đúng 1 lựa chọn (A/B/C/D/E)<br/>Invalid Rate = 0.0%"]
+        end
+    end
+
+    subgraph OUTPUT["💾 4. Đầu Ra & Persistence"]
+        I["<b>Ghi Cache Dài Hạn</b><br/>Cập nhật memory/long_term_cache.json"]
+        J["<b>File Kết Quả Jsonl</b><br/>outputs/V3_predictions.jsonl"]
+        K["<b>Báo Cáo Đánh Giá</b><br/>outputs/evaluation_report.txt"]
+    end
+
+    %% Flow connections
+    A --> B
+    B -- Found --> CacheHit --> Output
+    B -- Not Found --> CacheMiss --> C
+    
+    C --> D1 & D2 & D3 & D4 & D5
+    C --> E1
+    E1 --> E2 --> E3
+    
+    D1 & D2 & D3 & D4 & D5 & E3 --> F
+    F --> G
+    
+    G -- "Ý kiến bất đồng (NO)" --> Revise --> G
+    G -- "Đạt Đồng thuận (YES) / Hết 3 vòng" --> H
+    
+    H --> I & J --> K
+```
+
+### Các Bước Xử Lý Chi Tiết
+
 Luồng xử lý một câu hỏi lâm sàng trong hệ thống MedRAGAgents trải qua 5 bước chính:
 
 1. Bước 1 - Phân loại vùng tri thức (`DomainAgent`):
