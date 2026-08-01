@@ -255,42 +255,46 @@ MedRAGAgents/
 
 ---
 
-## 8. Hướng Dẫn Cài Đặt Môi Trường
+## 8. Hướng Dẫn Cài Đặt Môi Trường & Quick Start
+
+### Quy Trình Cài Đặt Nhanh (5 Bước Cho Repo Mới Clone)
+
+```bash
+# Bước 1: Clone kho mã nguồn từ GitHub
+git clone https://github.com/xcentralnn/MedRAGAgents.git
+cd MedRAGAgents
+
+# Bước 2: Khởi tạo môi trường ảo và cài đặt thư viện
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Bước 3: Cấu hình biến môi trường API Key
+cp .env.example .env
+# Chỉnh sửa file .env: Cập nhật GEMINI_API_KEY của bạn
+
+# Bước 4: Tải dữ liệu vector chỉ mục y khoa (chỉ cần chạy 1 lần)
+python3 download_corpus.py
+
+# Bước 5: Thực thi thử nghiệm hệ thống (Chạy thử 10 câu cho 4 biến thể V0 -> V3)
+python3 run.py --variant ALL --n 10 --evaluate
+```
+
+---
 
 ### Phụ thuộc yêu cầu
 
 - Python 3.10+
 - Khuyên dùng môi trường WSL (Windows Subsystem for Linux) trên hệ điều hành Windows.
 
-### 1. Khởi tạo Môi trường ảo và Cài đặt thư viện
+### Cấu hình file môi trường (.env)
 
-```bash
-cd ml-sec/MedRAGAgents
-
-# Tạo môi trường ảo .venv
-python3 -m venv .venv
-
-# Kích hoạt môi trường ảo
-source .venv/bin/activate
-
-# Cài đặt danh sách thư viện
-pip install -r requirements.txt
-```
-
-### 2. Cấu hình API Key
-
-Tạo file `.env` từ file mẫu `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-Cập nhật API Key và mô hình LLM mặc định trong file `.env`:
+Tạo file `.env` từ mẫu `.env.example`:
 
 ```env
 GEMINI_API_KEY=dien_gemini_api_key_tai_day
 DEFAULT_LLM=google/gemini-3.6-flash
-DATASET_DIR=../MedAgents/datasets/MedQA/
+DATASET_DIR=./datasets/MedQA/
 OUTPUT_DIR=./outputs
 LONG_TERM_MEM=./memory/long_term_cache.json
 ```
