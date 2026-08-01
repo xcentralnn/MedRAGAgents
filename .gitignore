@@ -21,8 +21,10 @@ __pycache__/
 # Node dependencies
 node_modules/
 
-# Large Datasets & Corpus Embeddings
-corpus/
+# Large Datasets & Corpus Heavy Embeddings/Indices
+corpus/**/*.index
+corpus/**/*.npy
+corpus/**/.cache/
 datasets/MedQA/test.jsonl
 
 # System & IDE
