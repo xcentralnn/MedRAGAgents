@@ -25,88 +25,84 @@ Hệ thống MedRAGAgents giải quyết các hạn chế trên thông qua 3 tr�
 
 ```mermaid
 flowchart TD
-    subgraph INPUT["1. Dau Vao Du Lieu"]
-        A["<b>Cau hoi Lam sang MedQA</b><br/>(question, options A-E, gold_answer)"]
+    A["run.py\nload_dataset() / extract_fields()"] --> B["run.py\nrun_variant()"]
+    B --> C["pipeline.py\nbuild_pipeline(variant)"]
+
+    subgraph V0["V0 — Baseline"]
+        D["pipeline.py\nV0DirectLLM.run()"]
     end
 
-    subgraph MEMORY_CHECK["2. Kiem Tra Bo Nho Dai Han (Long-Term Memory)"]
-        B{"<b>Khoa Bam SHA-256</b><br/>SHA256(question + options)"}
-        CacheHit["<b>CACHE HIT (Da lam)</b><br/>Tai ket qua tu memory/long_term_cache.json<br/>0ms | 0 Token"]
-        CacheMiss["<b>CACHE MISS (Cau moi)</b><br/>Khoi tao ShortTermMemory trong RAM"]
+    subgraph V1["V1 — RAG-only"]
+        E["pipeline.py\nV1RAGOnly.run()"]
+        E1["agents/rag_agent.py\nRAGAgent._init_retrieval()"]
+        E2["MedRAG/src/utils.py\nRetrievalSystem.retrieve()"]
+        E3["agents/base_agent.py\nBaseAgent.call()"]
     end
 
-    subgraph AGENT_PIPELINE["3. Luong Xu Ly Multi-Agent & MedRAG (V3 Full System)"]
-        
-        subgraph STEP1["Buoc 3.1: Phan Loai Mien Chuyen Khoa"]
-            C["<b>DomainAgent</b><br/>Phan tich kich ban lam sang & chon Top 5 chuyen khoa chinh"]
-        end
-
-        subgraph STEP2["Buoc 3.2: Phan Tich Chuyen Gia Doc Lap"]
-            D1["<b>Pathology Agent</b><br/>Phan tich Benh ly hoc"]
-            D2["<b>Pharmacology Agent</b><br/>Phan tich Duoc ly hoc"]
-            D3["<b>Internal Med Agent</b><br/>Phan tich Noi khoa"]
-            D4["<b>Surgery Agent</b><br/>Phan tich Ngoai khoa"]
-            D5["<b>Pediatrics Agent</b><br/>Phan tich Nhi khoa"]
-        end
-
-        subgraph STEP3["Buoc 3.3: Truy Xuat Tri Thuc Y Khoa"]
-            E1["<b>RAGAgent</b><br/>Ma hoa MedCPT-Query-Encoder"]
-            E2[("<b>Corpus Textbooks</b><br/>Gray's Anatomy, Harrison's...")]
-            E3["<b>Top-32 Chung Cu Y Hoc</b><br/>Doan trich tuong dong cao nhat"]
-        end
-
-        subgraph STEP4["Buoc 3.4: Tong Hop Bao Cao Y Khoa"]
-            F["<b>SynthesisAgent</b><br/>Hop nhat 5 bai phan tich chuyen gia + 32 doan RAG<br/>-> Synthesis Report"]
-        end
-
-        subgraph STEP5["Buoc 3.5: Vong Lap Hoi Chan Bo Phieu (Consensus Verification)"]
-            G{"<b>VerifierAgent</b><br/>5 Agent Chuyen gia Bo phieu (YES/NO)<br/>(Toi da 3 vong)"}
-            Revise["<b>SynthesisAgent</b><br/>Tiep thu gop y & Cap nhat Bao cao"]
-        end
-
-        subgraph STEP6["Buoc 3.6: Trich Xuat Dap An Chuan"]
-            H["<b>Strict Output Parser</b><br/>Trich xuat dung 1 lua chon (A/B/C/D/E)<br/>Invalid Rate = 0.0%"]
-        end
+    subgraph V2["V2 — Multi-agent"]
+        F["pipeline.py\nV2MultiAgent.run()"]
+        F1["agents/domain_agent.py\nDomainAgent.classify_question_domains()"]
+        F2["agents/domain_agent.py\nDomainAgent.classify_option_domains()"]
+        F3["agents/analysis_agent.py\nAnalysisAgent.run_question_analyses()"]
+        F4["agents/analysis_agent.py\nAnalysisAgent.run_option_analyses()"]
+        F5["agents/synthesis_agent.py\nSynthesisAgent.synthesise()"]
+        F6["agents/verifier_agent.py\nVerifierAgent.verify_and_answer()"]
+        F7["agents/verifier_agent.py\n_vote() / _get_advice() / _revise() / _derive_final_answer()"]
     end
 
-    subgraph OUTPUT["4. Dau Ra & Persistence"]
-        I["<b>Ghi Cache Dai Han</b><br/>Cap nhat memory/long_term_cache.json"]
-        J["<b>File Ket Qua Jsonl</b><br/>outputs/V3_predictions.jsonl"]
-        K["<b>Bao Cao Danh Gia</b><br/>outputs/evaluation_report.txt"]
+    subgraph V3["V3 — Full system"]
+        G["pipeline.py\nV3FullSystem.run()"]
+        G1["memory.py\nMemoryManager.reset_short()"]
+        G2["memory.py\nLongTermMemory.get() / store()"]
+        G3["agents/rag_agent.py\nRAGAgent.answer()"]
+        G4["memory.py\nShortTermMemory.store()/get()"]
     end
 
-    %% Flow connections
-    A --> B
-    B -- Found --> CacheHit --> Output
-    B -- Not Found --> CacheMiss --> C
-    
-    C --> D1 & D2 & D3 & D4 & D5
-    C --> E1
-    E1 --> E2 --> E3
-    
-    D1 & D2 & D3 & D4 & D5 & E3 --> F
-    F --> G
-    
-    G -- "Y kien bat dong (NO)" --> Revise --> G
-    G -- "Dat Dong thuan (YES) / Het 3 vong" --> H
-    
-    H --> I & J --> K
+    C --> D
+    C --> E
+    C --> F
+    C --> G
+
+    E --> E1 --> E2 --> E3
+
+    F --> F1
+    F --> F2
+    F1 --> F3
+    F2 --> F4
+    F3 --> F5
+    F4 --> F5
+    F5 --> F6 --> F7
+
+    G --> G1
+    G --> G2
+    G --> G3
+    G --> G4
+    G3 --> E2
+    G4 --> F1
+    G4 --> F3
+
+    D --> H["outputs/<variant>_predictions.jsonl"]
+    E3 --> H
+    F7 --> H
+    G --> H
+    H --> I["evaluate.py\nEvaluator.full_report()"]
 ```
 
-### Các Bước Xử Lý Chi Tiết
+### Luồng Gọi Theo File Code
 
-Luồng xử lý một câu hỏi lâm sàng trong hệ thống MedRAGAgents trải qua 5 bước chính:
+Luồng thực tế của hệ thống được điều phối theo thứ tự sau:
 
-1. Bước 1 - Phân loại vùng tri thức (`DomainAgent`):
-   Hệ thống đọc câu hỏi lâm sàng và các phương án chọn, sau đó phân loại thành 5 chuyên khoa chính cho câu hỏi và 2 chuyên khoa liên quan cho phương án lựa chọn.
-2. Bước 2 - Phân tích chuyên sâu từng miền (`AnalysisAgent`):
-   Kích hoạt các Agent chuyên gia y khoa tương ứng để phân tích ca bệnh độc lập từ góc nhìn chuyên môn của từng ngành (ví dụ: góc nhìn Bệnh lý học, góc nhìn Dược lý học).
-3. Bước 3 - Truy xuất chứng cứ y khoa (`RAGAgent`):
-   Sử dụng bộ truy xuất MedCPT để tìm kiếm Top-32 đoạn văn bản chứng cứ có độ tương đồng cao nhất từ cơ sở dữ liệu y khoa Textbooks.
-4. Bước 4 - Tổng hợp báo cáo y khoa (`SynthesisAgent`):
-   Tổng hợp toàn bộ các báo cáo phân tích chuyên gia và dữ liệu RAG thu thập được thành một bản báo cáo phân tích y khoa hợp nhất (Synthesis Report).
-5. Bước 5 - Hội chẩn bỏ phiếu & Sửa đổi (`VerifierAgent`):
-   Các Agent chuyên khoa tiến hành đánh giá và bỏ phiếu đồng thuận (YES/NO) trên báo cáo hợp nhất. Nếu có ý kiến bất đồng (NO), Agent đưa ra đề xuất sửa đổi, báo cáo được cập nhật và bỏ phiếu lại (tối đa 3 vòng) trước khi trích xuất đáp án lựa chọn cuối cùng (A, B, C, D hoặc E).
+1. [MedRAGAgents/run.py](MedRAGAgents/run.py) đọc dataset MedQA, chuẩn hóa câu hỏi bằng `load_dataset()` và `extract_fields()`, sau đó gọi `run_variant()` cho từng câu hỏi.
+2. [MedRAGAgents/pipeline.py](MedRAGAgents/pipeline.py) chọn biến thể cần chạy thông qua `build_pipeline(variant)`.
+3. Với biến thể V2, `V2MultiAgent.run()` lần lượt gọi:
+   - `DomainAgent.classify_question_domains()` và `classify_option_domains()`
+   - `AnalysisAgent.run_question_analyses()` và `run_option_analyses()`
+   - `SynthesisAgent.synthesise()`
+   - `VerifierAgent.verify_and_answer()`
+4. Với biến thể V3, `V3FullSystem.run()` chạy tương tự V2 nhưng thêm:
+   - `RAGAgent.answer()` để truy xuất chứng cứ từ MedRAG corpus
+   - `MemoryManager` để dùng short-term memory trong một câu hỏi và long-term cache qua các lượt chạy
+5. Tất cả các agent cuối cùng đều đi qua [MedRAGAgents/agents/base_agent.py](MedRAGAgents/agents/base_agent.py), nơi các prompt được gửi tới LLM provider tương ứng (Gemini/OpenAI/Anthropic) với retry và parsing đáp án.
 
 ### Các Bước Xử Lý Chi Tiết
 
@@ -227,31 +223,66 @@ Mỗi dòng trong file kết quả dự đoán là một JSON object hoàn chỉ
 
 ---
 
-## 7. Cấu Trúc Thư Mục Dự An
+## 7. Cấu Trúc Thư Mục Dự Án
 
 ```text
 MedRAGAgents/
-├── config.py                           # Cấu hình biến môi trường, LLM mặc định, đường dẫn
-├── memory.py                           # ShortTermMemory (RAM) & LongTermMemory (Disk Cache)
-├── pipeline.py                         # Điều phối các biến thể V0, V1, V2, V3
-├── run.py                              # CLI runner hỗ trợ kiểm soát tốc độ (--delay)
-├── evaluate.py                         # Tính Accuracy, McNemar test, Bootstrap 95% CI, Win/Loss/Tie
-├── requirements.txt                    # Danh sách thư viện Python
-├── .env.example                        # Mẫu file cấu hình API key
-├── .env                                # File cấu hình môi trường cục bộ
-├── MedRAGAgents_Midterm_Presentation.pptx # Slide thuyết trình báo cáo giữa kỳ (16:9)
-├── agents/                             # Thư mục chứa các Agent
-│   ├── base_agent.py                   # Wrapper gọi LLM đa nhà cung cấp (Gemini, OpenAI, Anthropic)
-│   ├── domain_agent.py                 # Agent phân loại chuyên khoa y tế
-│   ├── analysis_agent.py               # Agent phân tích góc nhìn chuyên gia
-│   ├── rag_agent.py                    # Wrapper truy xuất chứng cứ MedRAG
-│   ├── synthesis_agent.py              # Agent tổng hợp báo cáo y khoa
-│   └── verifier_agent.py               # Agent điều phối bỏ phiếu và sửa đổi đồng thuận
-├── datasets/                           # Thư mục chứa bộ dữ liệu
-│   └── MedQA/                          # Bộ dữ liệu MedQA-USMLE (test.jsonl)
-├── outputs/                            # Thư mục lưu file kết quả dự đoán jsonl
-└── memory/                             # Thư mục lưu persistent cache dài hạn
+├── agents/                             # Chứa các agent chuyên trách cho từng bước suy luận
+│   ├── base_agent.py                   # Wrapper chung để gọi LLM từ Gemini/OpenAI/Anthropic
+│   ├── domain_agent.py                 # Phân loại câu hỏi vào các lĩnh vực y học
+│   ├── analysis_agent.py               # Phân tích câu hỏi và lựa chọn theo từng chuyên khoa
+│   ├── rag_agent.py                    # Gói lớp truy xuất chứng cứ MedRAG
+│   ├── synthesis_agent.py              # Tổng hợp báo cáo từ các phân tích chuyên gia
+│   └── verifier_agent.py               # Điều phối bỏ phiếu và sửa đổi hội chẩn
+├── corpus/                             # Dữ liệu văn bản y khoa dùng cho hệ thống truy xuất
+│   └── textbooks/                      # Chứa các textbook chunks đã được tiền xử lý
+├── datasets/                           # Bộ dữ liệu input cho hệ thống
+│   └── MedQA/                          # Tập dữ liệu MedQA-USMLE (test.jsonl)
+├── memory/                             # Bộ nhớ dài hạn và cache của hệ thống
+│   └── long_term_cache.json            # Cache kết quả đã suy luận trước đó
+├── outputs/                            # Kết quả chạy thực tế của hệ thống
+│   ├── V0_predictions.jsonl            # Dự đoán từ biến thể V0
+│   ├── V1_predictions.jsonl            # Dự đoán từ biến thể V1
+│   ├── V2_predictions.jsonl            # Dự đoán từ biến thể V2
+│   ├── V3_predictions.jsonl            # Dự đoán từ biến thể V3
+│   ├── evaluation_report.txt          # Báo cáo đánh giá độ chính xác và thống kê
+│   └── run_execution.log              # Log chạy quá trình inference
+├── config.py                           # Cấu hình mặc định cho LLM, đường dẫn và tham số
+├── download_corpus.py                  # Script tải và chuẩn bị corpus cho RAG
+├── evaluate.py                         # Đánh giá kết quả bằng accuracy, bootstrap, McNemar
+├── memory.py                           # Short-term memory và Long-term memory manager
+├── pipeline.py                         # Điều phối V0–V3 và luồng suy luận multi-agent
+├── run.py                              # Entry point CLI để chạy inference trên dataset
+├── requirements.txt                    # Danh sách thư viện Python cần cài
+├── package.json                        # Script phụ trợ cho slide/presentation
+├── presentation_slides.html            # Bản trình bày HTML dùng cho slide
+├── MedRAGAgents_Midterm_Presentation.pptx  # Slide báo cáo giữa kỳ
+└── .env / .env.example                 # Cấu hình API key và biến môi trường
 ```
+
+### Mô Tả Chi Tiết Từng Thư Mục
+
+- `agents/`: chứa toàn bộ logic agent hóa. Mỗi file tương ứng với một vai trò riêng trong pipeline suy luận: `base_agent.py` dùng để gọi LLM, `domain_agent.py` phân loại chuyên khoa, `analysis_agent.py` phân tích chuyên sâu, `rag_agent.py` truy xuất văn bản y khoa, `synthesis_agent.py` tổng hợp, và `verifier_agent.py` kiểm tra đồng thuận.
+- `corpus/`: lưu trữ dữ liệu văn bản y khoa đã được chunk và dùng làm kho tri thức cho hệ thống RAG.
+- `datasets/`: chứa dữ liệu đầu vào, hiện tại là bộ MedQA-USMLE để chạy inference và đánh giá.
+- `memory/`: lưu cache dài hạn để hệ thống có thể nhận diện câu hỏi đã xử lý trước đó và bỏ qua bước suy luận lặp lại.
+- `outputs/`: lưu toàn bộ sản phẩm chạy thực tế bao gồm file dự đoán cho từng biến thể và báo cáo đánh giá.
+- `config.py`: tập trung các tham số cấu hình như provider LLM, model name, đường dẫn corpus, số lượng domain, v.v.
+- `pipeline.py`: trung tâm điều phối các biến thể V0, V1, V2, V3.
+- `run.py`: giao diện dòng lệnh để chạy hệ thống với các tham số như `--variant`, `--n`, `--delay`, `--evaluate`.
+
+### Nội Dung Thực Tế Hiện Tại Trong Thư Mục outputs
+
+Thư mục `outputs/` hiện đang chứa các file sau:
+
+- `V0_predictions.jsonl`: kết quả dự đoán từ hệ thống biến thể V0.
+- `V1_predictions.jsonl`: kết quả dự đoán từ hệ thống biến thể V1.
+- `V2_predictions.jsonl`: kết quả dự đoán từ hệ thống biến thể V2.
+- `V3_predictions.jsonl`: kết quả dự đoán từ hệ thống biến thể V3.
+- `evaluation_report.txt`: báo cáo đánh giá tổng hợp theo các chỉ số như accuracy, invalid rate, win/loss/tie.
+- `run_execution.log`: nhật ký chạy thực tế của quá trình inference.
+
+Mỗi file `*_predictions.jsonl` chứa các dòng JSON, mỗi dòng tương ứng với một câu hỏi trong dataset, bao gồm các trường như `idx`, `question`, `options`, `gold_answer`, `pred_answer`, `raw_output`, `syn_report`, `vote_history` và `from_cache` (đối với V3).
 
 ---
 
